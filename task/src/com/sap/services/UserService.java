@@ -16,9 +16,11 @@ public class UserService {
 	@GET
 	@Path("{id}")
 	public Response getUserById(@PathParam("id") int id) {
-		System.out.println(userRepository.getUser(id));
-		User user = new Admin("Alex", "123", "alelas@abv.bg", id);
-		return Response.status(200).entity(user.toJson()).build();
+		User user = userRepository.getUserById(id);
+		return Response.status(200).entity(userRepository.getUserById(id).toJson()).build();
+
 	}
+	
+	
 
 }

@@ -10,6 +10,9 @@ public class User {
 	private String email;
 	private Role role;
 	
+	public User() {
+		
+	}
 	public User(String name, String password, String email, Role role, int id) {
 		this.name = name;
 		this.email = email;
@@ -43,6 +46,12 @@ public class User {
 		this.role = role;
 	}
 	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	private void encryptPassword(String password) {
 		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 		this.password = passwordEncryptor.encryptPassword(password);

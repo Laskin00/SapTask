@@ -1,35 +1,44 @@
 package com.sap.repository;
 import java.sql.*;
 
-public class UserRepository {
-	private Connection conn;
-	private Statement stm;
+import com.sap.entities.Role;
+import com.sap.entities.User;
+import com.sap.exceptions.UserNotFoundException;
+
+public class UserRepository extends Repository{
+
 	
-	public UserRepository() {
-		try {
-			conn = DriverManager.getConnection(
-			        "jdbc:mysql://localhost:3306/task",
-			        "root", "root");
-			System.out.println("Connection successful!");
-		} catch (SQLException e) {
-			System.out.println("Connection failed !!!");
-			e.printStackTrace();
-		}
+	public User getUserById(Integer id) {
+		initPreparedStatement("select * from user where id = ?");
+		setPreparedStatement(1,id.toString());;
+		return createUserFromResultSet(executePreparedStatement());
 	}
 	
-	public String getUser(Integer id) {
-		String result = "";
+	public User getUserByEmail(String email) {
+		initPreparedStatement("select * from user where email = ?");
+		setPreparedStatement(1,email);;
+		return createUserFromResultSet(executePreparedStatement());
+	}
+	
+	public User createUserFromResultSet(ResultSet rs) {
+		User user = new User();
 		try {
-			stm = conn.createStatement();
-			ResultSet rset = stm.executeQuery("select * from user where id = 1");
-			result = rset.getString("name");
+			if(rs.next()) {
+				user.setEmail(rs.getString("email"));
+				user.setName(rs.getString("name"));
+				user.setId(Integer.decode(rs.getString("id")));
+				user.setPassword(rs.getString("password"));
+				user.setRole(Role.valueOf(rs.getString("role")));
+			}else {
+				throw new UserNotFoundException();
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
 		} catch (SQLException e) {
-			System.out.println("Statement failed");
 			e.printStackTrace();
 		}
-		System.out.println(result);
-		return result;
-		
+		return user;
 	}
+	
 	
 }
