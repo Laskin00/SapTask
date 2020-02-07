@@ -60,4 +60,12 @@ public class Repository {
 		}
 		return rs;
 	}
+	
+	public void executePreparedUpdate() {
+		try {
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

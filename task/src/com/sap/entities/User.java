@@ -9,16 +9,16 @@ public class User {
 	private String password;
 	private String email;
 	private Role role;
+	private String sessionToken;
 	
 	public User() {
 		
 	}
-	public User(String name, String password, String email, Role role, int id) {
+	public User(String name, String password, String email, Role role) {
 		this.name = name;
 		this.email = email;
 		this.role = role;
-		this.id = id;
-		encryptPassword(password);
+		this.password = password;
 	}
 	
 	public String getName() {
@@ -31,7 +31,7 @@ public class User {
 		return password;
 	}
 	public void setPassword(String password) {
-		encryptPassword(password);
+		this.password = password;
 	}
 	public String getEmail() {
 		return email;
@@ -45,27 +45,28 @@ public class User {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	private void encryptPassword(String password) {
+	public String getSessionToken() {
+		return sessionToken;
+	}
+	public void setSessionToken(String sessionToken) {
+		this.sessionToken = sessionToken;
+	}
+	
+	public void encryptPassword() {
 		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-		this.password = passwordEncryptor.encryptPassword(password);
+		this.password = passwordEncryptor.encryptPassword(this.password);
 	}
 	
 	public boolean authenticatePassword(String password) {
 		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 		return passwordEncryptor.checkPassword(password, this.password);
+		
 	}
-	
-	public String toJson() {;
-		return "{ \n\t\"id\": \"" + id.toString() + "\", \n\t\"name\": \"" + name + "\",\n\t\"email\": \"" + 
-		email + "\",\n\t\"password\": \"" + password + "\",\n\t\"role\": \"" + role.toString() + "\"\n}";
-	}
-	
 
 }
