@@ -15,7 +15,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sap.entities.User;
 import com.sap.exceptions.EmailConstraintException;
-import com.sap.exceptions.UserNotFoundException;
+import com.sap.exceptions.EntityNotFoundException;
+import com.sap.helpers.Message;
 import com.sap.repository.UserRepository;
 
 @Path("/user")
@@ -25,9 +26,12 @@ public class UserService {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public User getUserById(@PathParam("id") int id) {
-		User user = userRepository.getUserById(id);
-		return user;
+	public Response getUserById(@PathParam("id") int id) {
+		try {
+			return Response.status(200).entity(userRepository.getUserById(id)).build();
+		}catch(EntityNotFoundException e) {
+			return Response.status(404).entity(new Message("There is no user with such id.")).build();
+		}
 	}
 	
 	@POST
@@ -39,26 +43,27 @@ public class UserService {
 			user.encryptPassword();
 			userRepository.registerUser(user);
 		}catch(EmailConstraintException e) {
-			return Response.status(400).entity("Email already used !").build();
+			return Response.status(400).entity(new Message("Email already used !")).build();
 		}
-		return Response.status(201).entity("You have registered successfully").build();
+		return Response.status(201).entity(new Message("You have registered successfully.")).build();
 	}
 	
 	@PUT
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(ObjectNode emailAndPassword) {
 		try {
 			User user = userRepository.getUserByEmail(emailAndPassword.get("email").asText());
 			if(user.authenticatePassword(emailAndPassword.get("password").asText())) {
 				user.setSessionToken(RandomStringUtils.randomAlphanumeric(20));
 				userRepository.updateSessionToken(user.getId(), user.getSessionToken());
-				return Response.status(201).entity(user.getSessionToken()).build();
+				return Response.status(200).entity(user.getSessionToken()).build();
 			}else {
-				return Response.status(400).entity("Wrong email or password !").build();
+				return Response.status(400).entity(new Message("Wrong email or password !")).build();
 			}	
-		}catch(UserNotFoundException e) {
-			return Response.status(400).entity("There is no user with such email.").build();
+		}catch(EntityNotFoundException e) {
+			return Response.status(400).entity(new Message("There is no user with such email.")).build();
 		}
 		
 
@@ -72,9 +77,9 @@ public class UserService {
 			User user = userRepository.getUserBySessionToken(sessionToken.get("sessionToken").asText());
 			user.setSessionToken(null);
 			userRepository.updateSessionToken(user.getId(), null);
-			return Response.status(200).entity("Logout complete").build();
-		}catch(UserNotFoundException e) {
-			return Response.status(400).entity("There is no user with such sessionToken.").build();
+			return Response.status(200).entity(new Message("Logout complete.")).build();
+		}catch(EntityNotFoundException e) {
+			return Response.status(400).entity(new Message("There is no user with such sessionToken.")).build();
 		}
 	
 		

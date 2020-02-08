@@ -4,7 +4,7 @@ import java.sql.*;
 import com.sap.entities.Role;
 import com.sap.entities.User;
 import com.sap.exceptions.EmailConstraintException;
-import com.sap.exceptions.UserNotFoundException;
+import com.sap.exceptions.EntityNotFoundException;
 
 public class UserRepository extends Repository{
 
@@ -31,7 +31,7 @@ public class UserRepository extends Repository{
 		try {
 			getUserByEmail(user.getEmail());
 			throw new EmailConstraintException("The email is already used.");
-		}catch(UserNotFoundException e) {
+		}catch(EntityNotFoundException e) {
 			initPreparedStatement("insert into user(id,name,password,email,role) values(?,?,?,?,?)");
 			setPreparedStatement(1,getNextId().toString());
 			setPreparedStatement(2, user.getName());
@@ -71,7 +71,7 @@ public class UserRepository extends Repository{
 				user.setPassword(rs.getString("password"));
 				user.setRole(Role.valueOf(rs.getString("role")));
 			}else {
-				throw new UserNotFoundException();
+				throw new EntityNotFoundException();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
