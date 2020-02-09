@@ -2,9 +2,8 @@ package com.sap.entities;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-public class User {
+public class User extends AbstractEntity{
 	
-	private Integer id;
 	private String name;
 	private String password;
 	private String email;
@@ -45,12 +44,7 @@ public class User {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
+	
 	public String getSessionToken() {
 		return sessionToken;
 	}

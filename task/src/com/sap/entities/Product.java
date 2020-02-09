@@ -1,25 +1,16 @@
 package com.sap.entities;
 
-public class Product {
+public class Product extends AbstractEntity{
 
-	private int id;
 	private String name;
-	private int quantity;
-	private double minimalPrice;
-	private double actualPrice;
-	private double priceInSale;
-	private double blackFridaySalePercentage;
+	private Integer quantity;
+	private Double minimalPrice;
+	private Double actualPrice;
+	private Double priceInSale;
+	private Double blackFridayPercentage;
 	private boolean blackFriday;
 	
 	public Product() {
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -30,7 +21,7 @@ public class Product {
 		this.name = name;
 	}
 
-	public int getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
@@ -38,15 +29,15 @@ public class Product {
 		this.quantity = quantity;
 	}
 
-	public double getMinimalPrice() {
+	public Double getMinimalPrice() {
 		return minimalPrice;
 	}
 
-	public void setMinimalPrice(double minimalPrice) {
+	public void setMinimalPrice(Double minimalPrice) {
 		this.minimalPrice = minimalPrice;
 	}
 
-	public double getActualPrice() {
+	public Double getActualPrice() {
 		return actualPrice;
 	}
 
@@ -54,20 +45,20 @@ public class Product {
 		this.actualPrice = actualPrice;
 	}
 
-	public double getPriceInSale() {
+	public Double getPriceInSale() {
 		return priceInSale;
 	}
 
-	public void setPriceInSale(double priceInSale) {
+	public void setPriceInSale(Double priceInSale) {
 		this.priceInSale = priceInSale;
 	}
 
-	public double getBlackFridaySalePercentage() {
-		return blackFridaySalePercentage;
+	public Double getBlackFridayPercentage() {
+		return blackFridayPercentage;
 	}
 
-	public void setBlackFridaySalePercentage(double blackFridaySalePercentage) {
-		this.blackFridaySalePercentage = blackFridaySalePercentage;
+	public void setBlackFridayPercentage(double blackFridayPercentage) {
+		this.blackFridayPercentage = blackFridayPercentage;
 	}
 
 	public boolean isBlackFriday() {

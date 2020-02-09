@@ -1,18 +1,9 @@
 package com.sap.entities;
 
-public class Sales {
-	private int id;
+public class Sales extends AbstractEntity{
 	private double value;
 
 	public Sales() {
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public double getValue() {
