@@ -1,9 +1,9 @@
 package com.sap.entities;
 
-public class Sales extends AbstractEntity{
+public class Sale extends AbstractEntity{
 	private double value;
 
-	public Sales() {
+	public Sale() {
 	}
 
 	public double getValue() {

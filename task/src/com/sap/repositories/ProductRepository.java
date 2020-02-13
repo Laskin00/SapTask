@@ -1,4 +1,4 @@
-package com.sap.repository;
+package com.sap.repositories;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,6 +10,8 @@ import com.sap.exceptions.BlackFridayException;
 
 public class ProductRepository extends Repository {
 
+	private SaleRepository saleRepository = new SaleRepository();
+	
 	public Product getProductByField(String fieldName, String fieldValue) throws SQLException{
 		ResultSet rs = null;
 		PreparedStatement ps;
@@ -20,7 +22,7 @@ public class ProductRepository extends Repository {
 		return createProductFromResultSet(rs);
 	}
 	
-	public void addProduct(Product product) throws SQLException{
+	public void addNewProduct(Product product) throws SQLException{
 		PreparedStatement ps = 
 				connection.prepareStatement("insert into product(id,name,quantity,minimalPrice,actualPrice) values(?,?,?,?,?)");
 		ps.setInt(1,getNextId("product"));
@@ -39,7 +41,8 @@ public class ProductRepository extends Repository {
 	}
 	
 	public void updateField(Integer id, String fieldName, String fieldValue) throws SQLException{
-		super.updateFieldOfEntity("product", id, fieldName, fieldValue);
+		getProductByField("id",id.toString());
+		updateFieldOfEntity("product", id, fieldName, fieldValue);
 	}
 	
 	public List<Product> getAllProducts() throws SQLException{
@@ -62,7 +65,17 @@ public class ProductRepository extends Repository {
 		return products;
 	}
 	
-	public void addProductToBlackFriday(Integer id, Double blackFridayPercentage) throws SQLException, BlackFridayException{
+	public List<Product> getAllExistingProducts() throws SQLException{
+		List<Product> products = new ArrayList<Product>();
+		Statement statement = connection.createStatement();
+		ResultSet rs = statement.executeQuery("select * from product where quantity != 0");
+		while(rs.next()) {
+			products.add(createProductFromResultSet(rs));
+		}
+		return products;
+	}
+	
+	public void declareProductForBlackFriday(Integer id, Double blackFridayPercentage) throws SQLException, BlackFridayException{
 		Product product  = getProductByField("id", id.toString());
 		Double wantedPrice = product.getActualPrice() - (product.getActualPrice() * (blackFridayPercentage/100));
 		if(product.isBlackFriday()) throw new BlackFridayException("The product already participates in black friday");
@@ -70,17 +83,69 @@ public class ProductRepository extends Repository {
 			throw new BlackFridayException("The actual price cannot go lower than the minimal. Choose another sale percentage.");
 		updateField(id,"blackFridayPercentage", blackFridayPercentage.toString());
 		updateField(id,"blackFriday", "1");
-		updateField(id,"priceInSale", wantedPrice.toString());
+	}
+	public void addProductToBlackFriday(Integer id, Double blackFridayPercentage) throws SQLException, BlackFridayException{
+		declareProductForBlackFriday(id,blackFridayPercentage);
+		Double productPrice = getProductByField("id", id.toString()).getActualPrice();
+		Double wantedPrice = productPrice - (productPrice * blackFridayPercentage/100);
+		updateField(id,"actualPrice", wantedPrice.toString());
 	}
 	
-	public void removeProductFromBlackFriday(Integer id) throws SQLException, BlackFridayException{
+	public void removeDeclaredProductFromBlackFriday(Integer id) throws SQLException, BlackFridayException{
 		Product product = getProductByField("id", id.toString());
 		if(!product.isBlackFriday()) throw new BlackFridayException("The product does not participate in black Friday");
-		updateField(id,"priceInSale", product.getActualPrice().toString());
 		updateField(id,"blackFriday", "0");
+		updateField(id,"blackFridayPercentage", "0.00");
+	}
+	public void removeProductFromBlackFriday(Integer id) throws SQLException, BlackFridayException{
+		Product product = getProductByField("id", id.toString());
+		removeDeclaredProductFromBlackFriday(id);
+		Double wantedPrice = product.getActualPrice()*100/(100-product.getBlackFridayPercentage());
+		updateField(id, "actualPrice", wantedPrice.toString());
+	}
+	
+	public void startBlackFriday() throws SQLException{
+		List<Product> blackFridayProducts = getAllBlackFridayProducts();
+		for(Product p : blackFridayProducts) {
+			Double wantedPrice = p.getActualPrice() - (p.getActualPrice() * (p.getBlackFridayPercentage()/100));
+			updateField(p.getId(), "actualPrice", wantedPrice.toString());
+		}
+	}
+	public void stopBlackFriday() throws SQLException{
+		List<Product> blackFridayProducts = getAllBlackFridayProducts();
+		for(Product p : blackFridayProducts) {
+			Double wantedPrice = p.getActualPrice() * 100/(100-p.getBlackFridayPercentage());
+			updateField(p.getId(), "actualPrice", wantedPrice.toString());
+			updateField(p.getId(),"blackFriday", "0");
+			updateField(p.getId(),"blackFridayPercentage", "0,00");
+		}
+	}
+	
+	public void purchase(Integer id, Integer quantity) throws SQLException, ClassNotFoundException{
+		Connection con;
+		Class.forName("com.mysql.jdbc.Driver");
+		con = DriverManager.getConnection(
+			        "jdbc:mysql://localhost:3306/task",
+			        "root", "root");
+		con.setAutoCommit(false);
+		Product p = getProductByField("id", id.toString());
+		try {
+			PreparedStatement ps1 = con.prepareStatement("update purchase set quantity = ?");
+			ps1.setInt(1, p.getQuantity() - quantity);
+			ps1.executeUpdate();
+			PreparedStatement ps2 = con.prepareStatement("insert into sale(id,value) values(?,?)");
+			ps2.setInt(1, getNextId("sale"));
+			ps2.setDouble(2, p.getActualPrice() * quantity);
+			ps2.executeUpdate();
+			con.commit();
+		}catch(SQLException e) {
+			con.rollback();
+		}finally {
+			con.setAutoCommit(true);
+		}
 	}
 
-	public Product createProductFromResultSet(ResultSet rs) throws SQLException{
+	public static Product createProductFromResultSet(ResultSet rs) throws SQLException{
 		Product product = new Product();
 		product.setName(rs.getString("name"));
 		product.setActualPrice(rs.getDouble("actualPrice"));

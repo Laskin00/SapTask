@@ -1,4 +1,4 @@
-package com.sap.repository;
+package com.sap.repositories;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

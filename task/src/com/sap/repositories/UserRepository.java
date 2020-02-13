@@ -1,4 +1,4 @@
-package com.sap.repository;
+package com.sap.repositories;
 import java.sql.*;
 
 import com.sap.entities.Role;
@@ -19,7 +19,7 @@ public class UserRepository extends Repository{
 	
 	public void updateField(Integer id, String fieldName, String fieldValue) throws SQLException{
 		getUserByField("id", id.toString());
-		super.updateFieldOfEntity("user", id, fieldName, fieldValue);
+		updateFieldOfEntity("user", id, fieldName, fieldValue);
 	}
 
 	public void addUser(User user) throws SQLException{
@@ -34,7 +34,7 @@ public class UserRepository extends Repository{
 		ps.close();	
 	}
 	
-	public User createUserFromResultSet(ResultSet rs) throws SQLException{
+	public  User createUserFromResultSet(ResultSet rs) throws SQLException{
 		User user = new User();
 			if(rs.first()) {
 				user.setEmail(rs.getString("email"));

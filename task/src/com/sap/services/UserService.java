@@ -18,11 +18,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sap.entities.User;
 import com.sap.exceptions.EntityNotFoundException;
 import com.sap.helpers.Message;
-import com.sap.repository.UserRepository;
+import com.sap.repositories.UserRepository;
 
 @Path("/user")
-public class UserService {
-	private UserRepository userRepository = new UserRepository();
+public class UserService extends Service{
 
 	@GET
 	@Path("{id}")
