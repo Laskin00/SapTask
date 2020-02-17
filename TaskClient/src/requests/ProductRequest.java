@@ -98,4 +98,7 @@ public class ProductRequest extends SuperRequest {
 		return doPostRequestWithSessionToken(urlBase + "purchase/" + id.toString(),
 				JsonHelper.mapToJson(map),sessionToken);
 	}
+	public static boolean blackFridayStatus() throws IOException{
+		return Boolean.parseBoolean(JsonHelper.getValue(doGetRequest(urlBase  +"blackfriday/status"), "status"));
+	}
 }

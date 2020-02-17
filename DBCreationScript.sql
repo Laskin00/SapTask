@@ -12,6 +12,10 @@ drop table if exists sale;
 create table sale(id int not null unique, userId int not null, productName varchar(60), value decimal(12,2), createdAt  datetime default current_timestamp,
 foreign key(userId) references user(id), foreign key (productName) references product(name), primary key(id));
 
+drop table if exists blackFridayStatus;
+create table blackFridayStatus(id int not null,status bool default false, primary key(id));
+insert into blackFridayStatus(id,status) values(1,false);
+
 
 
 

@@ -49,4 +49,9 @@ public class SuperRequest {
     	Request req = new Request.Builder().url(url).post(body).addHeader("sessionToken", sessionToken).build();
     	return client.newCall(req).execute().body().string();
     }
+    protected static String doGetRequestWithSessionToken(String url,String sessionToken) throws IOException {
+    	Request req = new Request.Builder().url(url).addHeader("sessionToken", sessionToken).build();
+    	Response response = client.newCall(req).execute();
+        return response.body().string();
+    }
 }

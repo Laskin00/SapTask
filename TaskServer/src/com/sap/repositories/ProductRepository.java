@@ -94,6 +94,7 @@ public class ProductRepository extends Repository {
 
 	public void addProductToBlackFriday(Integer id, Double blackFridayPercentage)
 			throws SQLException, ProductException {
+		if(!getBlackFridayStatus()) throw new ProductException("You cannot do that when blackfriday is not active");
 		declareProductForBlackFriday(id, blackFridayPercentage);
 		Double productPrice = getProductByField("id", id.toString()).getActualPrice();
 		Double wantedPrice = productPrice - (productPrice * blackFridayPercentage / 100);
@@ -109,6 +110,7 @@ public class ProductRepository extends Repository {
 	}
 
 	public void removeProductFromBlackFriday(Integer id) throws SQLException, ProductException {
+		if(!getBlackFridayStatus()) throw new ProductException("You cannot do that when blackfriday is not active");
 		Product product = getProductByField("id", id.toString());
 		removeDeclaredProductFromBlackFriday(id);
 		Double wantedPrice = product.getActualPrice() * 100 / (100 - product.getBlackFridayPercentage());
@@ -121,6 +123,7 @@ public class ProductRepository extends Repository {
 			Double wantedPrice = p.getActualPrice() - (p.getActualPrice() * (p.getBlackFridayPercentage() / 100));
 			updateField(p.getId(), "actualPrice", wantedPrice.toString());
 		}
+		updateFieldOfEntity("blackFridayStatus", 1,"status","1");
 	}
 
 	public void stopBlackFriday() throws SQLException {
@@ -129,14 +132,15 @@ public class ProductRepository extends Repository {
 			Double wantedPrice = p.getActualPrice() * 100 / (100 - p.getBlackFridayPercentage());
 			updateField(p.getId(), "actualPrice", wantedPrice.toString());
 			updateField(p.getId(), "blackFriday", "0");
-			updateField(p.getId(), "blackFridayPercentage", "0,00");
+			updateField(p.getId(), "blackFridayPercentage", "0.00");
 		}
+		updateFieldOfEntity("blackFridayStatus", 1,"status","0");
 	}
 
 	public void purchase(Integer id, Integer userId, Integer quantity) throws SQLException, ClassNotFoundException, ProductException {
 		Connection con;
 		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/task", "root", "root");
+		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/task", "task", "Task123!");
 		con.setAutoCommit(false);
 		Product p = getProductByField("id", id.toString());
 		if(p.getQuantity() < quantity) throw new ProductException("You are trying to buy more than the store has.");
@@ -169,6 +173,14 @@ public class ProductRepository extends Repository {
 		product.setId(rs.getInt("id"));
 		product.setQuantity(rs.getInt("quantity"));
 		return product;
+	}
+	
+	public boolean getBlackFridayStatus() throws SQLException{
+		Statement statement = connection.createStatement();
+		ResultSet rs = statement.executeQuery("select status from blackFridayStatus where id = 1");
+		rs.next();
+		return rs.getBoolean("status");
+		
 	}
 
 }

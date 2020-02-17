@@ -18,7 +18,14 @@ public class JsonHelper {
 		} catch (ParseException e) {
 			return e.getMessage();
 		}
-		return json.get(fieldName).toString();
+		String result;
+		try {	
+			result = json.get(fieldName).toString();
+		}catch(NullPointerException e) {
+			return null;
+		}
+		
+		return result;
 	}
 	
 	public static String mapToJson(Map<String,String> map) {

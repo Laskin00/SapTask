@@ -25,10 +25,10 @@ import com.sap.helpers.Message;
 public class UserService extends Service{
 
 	@GET
-	@Path("{id}")
-	public Response getUserById(@PathParam("id") Integer id) {
+	@Path("/role")
+	public Response getUserById(@HeaderParam("sessionToken") String sessionToken) {
 		try {
-			return Response.status(200).entity(userRepository.getUserByField("id",id.toString())).build();
+			return Response.status(200).entity(userRepository.getUserByField("sessionToken",sessionToken)).build();
 		}catch(EntityNotFoundException e) {
 			return Response.status(404).entity(new Message(e.getMessage())).build();
 		} catch (SQLException e) {
@@ -41,7 +41,7 @@ public class UserService extends Service{
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response register(User user) {
 		try {
-			if(user.getName() == "" || user.getPassword() == null || user.getEmail() == null || user.getRole() == null) 
+			if(user.getName() == "" || user.getPassword() == "" || user.getEmail() == "" || user.getRole() == null) 
 				return Response.status(400).entity(new Message("Provide valid name, password, email and role !")).build();
 			user.encryptPassword();
 			userRepository.addUser(user);

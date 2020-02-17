@@ -39,19 +39,14 @@ public class ProductService extends Service{
 			}
 			if(userRepository.getUserByField("sessionToken", sessionToken).getRole() != Role.ADMIN)
 				return Response.status(401).entity(new Message("You are not authorized to add products.")).build();
+			
+			productRepository.addNewProduct(product);
+			return Response.status(201).entity(new Message("You have added a product.")).build();
 		} catch (SQLException e1) {
 			return Response.status(400).entity(new Message(e1.getMessage())).build();
 		} catch (EntityNotFoundException e2) {
 			return Response.status(400).entity(new Message(e2.getMessage())).build();
-		}
-		
-		try {
-			productRepository.addNewProduct(product);
-			return Response.status(201).entity(new Message("You have added a product.")).build();
-		}catch (SQLException e) {
-			return Response.status(400).entity(new Message(e.getMessage())).build();
-		}
-		
+		}	
 	}
 	@PUT
 	@Path("/update/quantity/{id}")
@@ -254,7 +249,6 @@ public class ProductService extends Service{
 			return Response.status(400).entity(new Message(e.getMessage())).build();
 		}
 	}
-	//DO NOT USE IF BLACKFRIDAY IS NOT ACTIVE
 	@PUT
 	@Path("/blackfriday/add/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -293,7 +287,6 @@ public class ProductService extends Service{
 			return Response.status(400).entity(new Message(e.getMessage())).build();
 		}
 	}
-	//DO NOT USE IF BLACKFRIDAY IS NOT ACTIVE
 	@PUT
 	@Path("/blackfriday/remove/{id}")
 	public Response removeFromBlackFriday(@PathParam("id") Integer id, @HeaderParam("sessionToken") String sessionToken) {
@@ -320,9 +313,9 @@ public class ProductService extends Service{
 		Integer quantity = quantityNode.get("quantity").asInt();
 		if(quantity == 0) return Response.status(400).entity(new Message("Provide quantity as body !")).build();
 		try {
-			if(!isAdmin(sessionToken)) {
+			if(isAdmin(sessionToken)) {
 				return Response.status(401).
-						entity(new Message("The sessionToken header provided is incorrect or the user is not a user.")).build();
+						entity(new Message("The sessionToken header provided is incorrect or the user is not a customer.")).build();
 			}
 			User buyer = userRepository.getUserByField("sessionToken", sessionToken);
 			productRepository.purchase(id,buyer.getId(),quantity);
@@ -334,6 +327,16 @@ public class ProductService extends Service{
 		} catch (ProductException e) {
 			return Response.status(400).entity(new Message(e.getMessage())).build();
 		}catch(EntityNotFoundException e) {
+			return Response.status(400).entity(new Message(e.getMessage())).build();
+		}
+	}
+	
+	@GET
+	@Path("/blackfriday/status")
+	public Response getBlackFridayStatus() {
+		try {
+			return Response.status(200).entity("{\"status\" : \"" + productRepository.getBlackFridayStatus() +"\" }").build();
+		} catch (SQLException e) {
 			return Response.status(400).entity(new Message(e.getMessage())).build();
 		}
 	}

@@ -14,15 +14,17 @@ public class UserRequest extends SuperRequest {
 			return doGetRequest(urlBase + id.toString());
 	}
 	
-	public static String register(String name, String password, String email, String role) throws IOException{
+	public static String register(String name, String email, String password, String role) throws IOException{
+		System.out.println(role);
 		if(!Pattern.matches("^(.+)@(.+)$", email) || email == "") return "Provide a valid email!";
+		if(!role.toUpperCase().equals("ADMIN") && !role.toUpperCase().equals("CUSTOMER")) return "Provide a valid role !";
 		
 		Map<String,String> map = new HashMap<String,String>();
 		map.put("name", name);
 		map.put("password", password);
 		map.put("email", email);
 		map.put("role", role.toUpperCase());
-
+		
 		return JsonHelper.getValue(doPostRequest(urlBase + "register", JsonHelper.mapToJson(map)), "message");
 
 	}
@@ -32,6 +34,9 @@ public class UserRequest extends SuperRequest {
 		map.put("email", email);
 		map.put("password", password);
 		return doPutRequest(urlBase+"login",JsonHelper.mapToJson(map));
+	}
+	public static String getRoleBySessionToken(String sessionToken) throws IOException {
+		 return JsonHelper.getValue(doGetRequestWithSessionToken(urlBase+"role", sessionToken), "role");
 	}
 	public static String logout(String sessionToken) throws IOException{
 		return doPutRequestWithSessionToken(urlBase+"logout","",sessionToken);

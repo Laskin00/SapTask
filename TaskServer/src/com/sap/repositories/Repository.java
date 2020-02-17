@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
-public abstract class Repository {
+public class Repository {
 	protected Connection connection;
 	
 	public Repository(){
@@ -15,7 +16,7 @@ public abstract class Repository {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection(
 				        "jdbc:mysql://localhost:3306/task",
-				        "root", "root");
+				        "task", "Task123!");
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
