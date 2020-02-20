@@ -1,6 +1,5 @@
 package helpers;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,7 +9,7 @@ import org.json.simple.parser.ParseException;
 
 public class JsonHelper {
 
-	public static String getValue(String jsonString, String fieldName){
+	public String getValue(String jsonString, String fieldName){
 		JSONParser parser = new JSONParser();
 		JSONObject json;
 		try {
@@ -28,7 +27,7 @@ public class JsonHelper {
 		return result;
 	}
 	
-	public static String mapToJson(Map<String,String> map) {
+	public String mapToJson(Map<String,String> map) {
 		Set< Map.Entry< String,String> > st = map.entrySet();
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");

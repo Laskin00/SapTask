@@ -5,17 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import helpers.JsonHelper;
-
 public class UserRequest extends SuperRequest {
 	private static final String urlBase = "http://localhost:8080/task/user/";
 	
-	public static String getUserById(Integer id) throws IOException{
-			return doGetRequest(urlBase + id.toString());
-	}
-	
-	public static String register(String name, String email, String password, String role) throws IOException{
-		System.out.println(role);
+	public String register(String name, String email, String password, String role) throws IOException{
 		if(!Pattern.matches("^(.+)@(.+)$", email) || email == "") return "Provide a valid email!";
 		if(!role.toUpperCase().equals("ADMIN") && !role.toUpperCase().equals("CUSTOMER")) return "Provide a valid role !";
 		
@@ -25,20 +18,20 @@ public class UserRequest extends SuperRequest {
 		map.put("email", email);
 		map.put("role", role.toUpperCase());
 		
-		return JsonHelper.getValue(doPostRequest(urlBase + "register", JsonHelper.mapToJson(map)), "message");
+		return jh.getValue(doPostRequest(urlBase + "register", jh.mapToJson(map)), "message");
 
 	}
 	
-	public static String login(String email, String password) throws IOException{
+	public String login(String email, String password) throws IOException{
 		Map<String,String> map = new HashMap<String,String>();
 		map.put("email", email);
 		map.put("password", password);
-		return doPutRequest(urlBase+"login",JsonHelper.mapToJson(map));
+		return doPutRequest(urlBase+"login",jh.mapToJson(map));
 	}
-	public static String getRoleBySessionToken(String sessionToken) throws IOException {
-		 return JsonHelper.getValue(doGetRequestWithSessionToken(urlBase+"role", sessionToken), "role");
+	public String getRoleBySessionToken(String sessionToken) throws IOException {
+		 return jh.getValue(doGetRequestWithSessionToken(urlBase+"role", sessionToken), "role");
 	}
-	public static String logout(String sessionToken) throws IOException{
+	public String logout(String sessionToken) throws IOException{
 		return doPutRequestWithSessionToken(urlBase+"logout","",sessionToken);
 	}
 }
