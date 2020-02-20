@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sap.entities.Product;
-import com.sap.exceptions.ProductException;
 import com.sap.exceptions.EntityNotFoundException;
+import com.sap.exceptions.ProductException;
 
 public class ProductRepository extends Repository {
 

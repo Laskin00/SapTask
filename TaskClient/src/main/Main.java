@@ -2,11 +2,13 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import commands.CommandContainer;
-import commands.commandImpl.user.*;
+import commands.commandImpl.user.GetRole;
+import commands.commandImpl.user.Login;
+import commands.commandImpl.user.Logout;
+import commands.commandImpl.user.Register;
 import helpers.JsonHelper;
 
 public class Main {

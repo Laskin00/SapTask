@@ -4,7 +4,6 @@ import java.sql.SQLException;
 
 import com.sap.entities.Role;
 import com.sap.repositories.ProductRepository;
-import com.sap.repositories.Repository;
 import com.sap.repositories.SaleRepository;
 import com.sap.repositories.UserRepository;
 public class Service {

@@ -4,9 +4,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import commands.commandImpl.product.*;
-import commands.commandImpl.sale.*;
-import commands.commandImpl.user.*;
+import commands.commandImpl.product.AddProduct;
+import commands.commandImpl.product.AddProductToBlackFriday;
+import commands.commandImpl.product.DeclareProductForNextBlackFriday;
+import commands.commandImpl.product.DeleteProduct;
+import commands.commandImpl.product.GetAllProducts;
+import commands.commandImpl.product.GetBlackFridayProducts;
+import commands.commandImpl.product.GetExistingProducts;
+import commands.commandImpl.product.PurchaseProduct;
+import commands.commandImpl.product.RemoveDeclaredProductFromBlackFriday;
+import commands.commandImpl.product.RemoveProductFromBlackFriday;
+import commands.commandImpl.product.StartBlackFriday;
+import commands.commandImpl.product.StopBlackFriday;
+import commands.commandImpl.product.UpdateActualPrice;
+import commands.commandImpl.product.UpdateMinimalPrice;
+import commands.commandImpl.product.UpdateName;
+import commands.commandImpl.product.UpdateProductQuantity;
+import commands.commandImpl.sale.GetSalesForPeriodOfTime;
 
 public class CommandContainer {
 	List<Command> commands = new ArrayList<Command>();

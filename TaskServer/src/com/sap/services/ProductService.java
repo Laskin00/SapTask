@@ -18,8 +18,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sap.entities.Product;
 import com.sap.entities.Role;
 import com.sap.entities.User;
-import com.sap.exceptions.ProductException;
 import com.sap.exceptions.EntityNotFoundException;
+import com.sap.exceptions.ProductException;
 import com.sap.helpers.Message;
 
 @Path("/product")
